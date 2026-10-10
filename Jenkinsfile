@@ -17,6 +17,16 @@ pipeline {
             }
         }
 
+        stage('Frontend Quality Checks') {
+            steps {
+                dir('frontend') {
+                    sh 'npm ci'
+                    sh 'npm run lint'
+                    sh 'npm run build'
+                }
+            }
+        }
+
         stage('Test and Build Backend') {
             steps {
                 dir('backend') {
@@ -75,6 +85,9 @@ pipeline {
         }
         failure {
             echo 'Pipeline failed. Check the stage logs.'
+        }
+        always {
+            echo 'Pipeline execution finished.'
         }
     }
 }
