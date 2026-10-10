@@ -25,7 +25,7 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8085/api/auth/signup", {
+      const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +37,16 @@ export default function Signup() {
         }),
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data = {};
+
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          throw new Error("The server returned an invalid response.");
+        }
+      }
 
       if (!response.ok) {
         throw new Error(data.message || "Signup failed.");
@@ -49,9 +58,10 @@ export default function Signup() {
       setTimeout(() => navigate("/login"), 1500);
     } catch (error) {
       setIsError(true);
+
       setMessage(
         error.message === "Failed to fetch"
-          ? "Cannot connect to the backend. Check that Spring Boot is running on port 8085."
+          ? "Cannot connect to the backend. Please check your connection."
           : error.message,
       );
     } finally {
