@@ -1,0 +1,136 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #172033;
+  background: #f3f6fc;
+}
+
+a {
+  color: #315bd6;
+  text-decoration: none;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #e9efff, #f8faff);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px #17203314;
+}
+
+.auth-card h1 {
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.subtitle {
+  margin-bottom: 28px;
+  color: #68738a;
+  text-align: center;
+}
+
+.auth-card label {
+  display: block;
+  margin: 16px 0 7px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d7deea;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.auth-card button,
+.primary-link {
+  display: block;
+  width: 100%;
+  margin-top: 24px;
+  padding: 13px;
+  border: 0;
+  border-radius: 8px;
+  background: #315bd6;
+  color: white;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.switch-link {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 8%;
+  background: white;
+}
+
+.navbar h2 {
+  margin: 0;
+  color: #315bd6;
+}
+
+.navbar a {
+  margin-left: 20px;
+}
+
+.navbar .nav-button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #315bd6;
+  color: white;
+}
+
+.hero {
+  min-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  text-align: center;
+}
+
+.hero h1 {
+  margin: 12px 0;
+  font-size: clamp(36px, 6vw, 58px);
+}
+
+.hero p {
+  max-width: 520px;
+  line-height: 1.7;
+  color: #68738a;
+}
+
+.hero .eyebrow {
+  color: #315bd6;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.primary-link {
+  width: auto;
+  padding: 14px 26px;
+}
