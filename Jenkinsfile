@@ -5,6 +5,10 @@ pipeline {
         timestamps()
     }
 
+    environment {
+        DOCKERHUB_USER = 'srikanthagowda098'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -33,6 +37,31 @@ pipeline {
             }
         }
 
+        stage('Push Images to Docker Hub') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-credentials',
+                        usernameVariable: 'DOCKERHUB_USERNAME',
+                        passwordVariable: 'DOCKERHUB_TOKEN'
+                    )
+                ]) {
+                    sh '''
+                        set +x
+                        echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+
+                        docker tag fullstack-backend:${BUILD_NUMBER} "$DOCKERHUB_USERNAME/fullstack-backend:${BUILD_NUMBER}"
+                        docker tag fullstack-frontend:${BUILD_NUMBER} "$DOCKERHUB_USERNAME/fullstack-frontend:${BUILD_NUMBER}"
+
+                        docker push "$DOCKERHUB_USERNAME/fullstack-backend:${BUILD_NUMBER}"
+                        docker push "$DOCKERHUB_USERNAME/fullstack-frontend:${BUILD_NUMBER}"
+
+                        docker logout
+                    '''
+                }
+            }
+        }
+
         stage('Verify Docker Images') {
             steps {
                 sh 'docker images'
@@ -42,7 +71,7 @@ pipeline {
 
     post {
         success {
-            echo 'CI pipeline completed successfully!'
+            echo 'CI pipeline and Docker Hub publishing completed successfully!'
         }
         failure {
             echo 'Pipeline failed. Check the stage logs.'
