@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -59,13 +60,15 @@ pipeline {
                 ]) {
                     sh '''
                         set +x
+                        set -eu
+
                         echo "$DOCKERHUB_TOKEN" | docker login \
                             -u "$DOCKERHUB_USERNAME" --password-stdin
 
-                        docker tag fullstack-backend:${BUILD_NUMBER} \
+                        docker tag "fullstack-backend:${BUILD_NUMBER}" \
                             "$DOCKERHUB_USERNAME/fullstack-backend:${BUILD_NUMBER}"
 
-                        docker tag fullstack-frontend:${BUILD_NUMBER} \
+                        docker tag "fullstack-frontend:${BUILD_NUMBER}" \
                             "$DOCKERHUB_USERNAME/fullstack-frontend:${BUILD_NUMBER}"
 
                         docker push \
@@ -83,10 +86,15 @@ pipeline {
         stage('Verify Docker Images') {
             steps {
                 sh '''
+                    set -eu
+
                     docker image inspect \
-                        "$DOCKERHUB_USER/fullstack-backend:${BUILD_NUMBER}"
+                        "$DOCKERHUB_USER/fullstack-backend:${BUILD_NUMBER}" >/dev/null
+
                     docker image inspect \
-                        "$DOCKERHUB_USER/fullstack-frontend:${BUILD_NUMBER}"
+                        "$DOCKERHUB_USER/fullstack-frontend:${BUILD_NUMBER}" >/dev/null
+
+                    echo "Both Docker images verified."
                 '''
             }
         }
@@ -102,6 +110,8 @@ pipeline {
                 ]) {
                     sh '''
                         set +x
+                        set -eu
+
                         ssh -i "$SSH_KEY" \
                             -o BatchMode=yes \
                             -o StrictHostKeyChecking=accept-new \
@@ -124,6 +134,7 @@ pipeline {
                 ]) {
                     sh '''
                         set +x
+                        set -eu
 
                         ssh -i "$SSH_KEY" \
                             -o BatchMode=yes \
@@ -154,13 +165,13 @@ echo "Pulling application images..."
 docker_cmd pull "$BACKEND_IMAGE"
 docker_cmd pull "$FRONTEND_IMAGE"
 
-# Preserve DB settings without printing their values.
+# Preserve database settings without printing their values.
 ENV_FILE=$(mktemp)
 chmod 600 "$ENV_FILE"
 trap 'rm -f "$ENV_FILE"' EXIT
 
-docker_cmd inspect fullstack-backend 
-    --format '{{range .Config.Env}}{{println .}}{{end}}' 
+docker_cmd inspect fullstack-backend \
+    --format '{{range .Config.Env}}{{println .}}{{end}}' \
     | grep -E '^(DB_URL|DB_USERNAME|DB_PASSWORD)=' > "$ENV_FILE"
 
 for variable in DB_URL DB_USERNAME DB_PASSWORD; do
@@ -173,23 +184,23 @@ done
 echo "Replacing backend container..."
 docker_cmd rm -f fullstack-backend
 
-docker_cmd run -d 
-    --name fullstack-backend 
-    --restart unless-stopped 
-    --network fullstack-network 
-    --network-alias backend 
-    --env-file "$ENV_FILE" 
-    -p 8085:8085 
+docker_cmd run -d \
+    --name fullstack-backend \
+    --restart unless-stopped \
+    --network fullstack-network \
+    --network-alias backend \
+    --env-file "$ENV_FILE" \
+    -p 8085:8085 \
     "$BACKEND_IMAGE"
 
 echo "Replacing frontend container..."
 docker_cmd rm -f fullstack-frontend
 
-docker_cmd run -d 
-    --name fullstack-frontend 
-    --restart unless-stopped 
-    --network fullstack-network 
-    -p 8081:80 
+docker_cmd run -d \
+    --name fullstack-frontend \
+    --restart unless-stopped \
+    --network fullstack-network \
+    -p 8081:80 \
     "$FRONTEND_IMAGE"
 
 echo "Checking container status..."
