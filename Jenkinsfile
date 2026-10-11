@@ -93,7 +93,7 @@ pipeline {
                             -o BatchMode=yes \
                             -o StrictHostKeyChecking=accept-new \
                             -o ConnectTimeout=10 \
-                            "$SSH_USER@13.201.133.218" \
+                            "$SSH_USER@172.31.11.146" \
                             'hostname && whoami'
                     '''
                 }
