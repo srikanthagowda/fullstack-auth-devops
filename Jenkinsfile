@@ -77,11 +77,33 @@ pipeline {
                 sh 'docker images'
             }
         }
+
+        stage('Test Production SSH') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'production-ec2-ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
+                    sh '''
+                        set +x
+                        ssh -i "$SSH_KEY" \
+                            -o BatchMode=yes \
+                            -o StrictHostKeyChecking=accept-new \
+                            -o ConnectTimeout=10 \
+                            "$SSH_USER@13.201.133.218" \
+                            'hostname && whoami'
+                    '''
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo 'CI pipeline and Docker Hub publishing completed successfully!'
+            echo 'CI pipeline, Docker Hub publishing, and production SSH test completed successfully!'
         }
         failure {
             echo 'Pipeline failed. Check the stage logs.'
