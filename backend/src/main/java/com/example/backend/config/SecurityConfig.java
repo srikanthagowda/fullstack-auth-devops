@@ -38,7 +38,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
             "http://localhost:5173",
             "http://localhost:8081",
-            "http://3.109.206.241:8081"
+            "http://3.109.206.241:8081",
+            "http://13.201.133.218:8081"
         ));
 
         config.setAllowedMethods(List.of(
